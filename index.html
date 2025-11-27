@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Attendance QR</title>
+</head>
+<body>
+    <h1>QR Attendance Check</h1>
+
+    <label>Your Name:</label><br>
+    <input id="name" type="text" /><br><br>
+
+    <button onclick="saveAttendance()">Submit</button>
+
+    <script>
+        function saveAttendance() {
+            const name = document.getElementById("name").value;
+            const time = new Date().toLocaleString();
+
+            alert("Saved!\nName: " + name + "\nTime: " + time);
+        }
+    </script>
+</body>
+</html>
+
