@@ -1,0 +1,31 @@
+name: Update Attendance Data
+
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [save-attendance]
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Read payload
+        run: |
+          echo '${{ github.event.client_payload.data }}' > new_record.json
+
+      - name: Update attendance.json
+        run: |
+          jq ". + [$(cat new_record.json)]" data/attendance.json > data/new.json
+          mv data/new.json data/attendance.json
+
+      - name: Commit changes
+        run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+          git add data/attendance.json
+          git commit -m "Update attendance data"
+          git push
+
