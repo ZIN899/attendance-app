@@ -1,25 +1,110 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
-    <meta charset="UTF-8" />
-    <title>Attendance QR</title>
+<meta charset="UTF-8">
+<title>出席確認</title>
+<style>
+body {
+    font-family: "Yu Gothic", sans-serif;
+    padding: 20px;
+}
+.container {
+    max-width: 350px;
+    margin: 0 auto;
+}
+input, button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    font-size: 16px;
+}
+</style>
 </head>
 <body>
-    <h1>QR Attendance Check</h1>
 
-    <label>Your Name:</label><br>
-    <input id="name" type="text" /><br><br>
+<div class="container">
+    <h2>出席確認</h2>
 
-    <button onclick="saveAttendance()">Submit</button>
+    <label>名前（学生名）</label>
+    <input type="text" id="name" placeholder="例：ジンマーチ">
 
-    <script>
-        function saveAttendance() {
-            const name = document.getElementById("name").value;
-            const time = new Date().toLocaleString();
+    <button onclick="submitAttendance()">送信</button>
+</div>
 
-            alert("Saved!\nName: " + name + "\nTime: " + time);
+<script>
+// 時間割データ
+const timetable = {
+    "月": [
+        { subject: "プログラミング", start: "09:20", end: "10:50" },
+        { subject: "職業とキャリア", start: "11:00", end: "12:30" },
+        { subject: "AI開発", start: "13:20", end: "14:50" }
+    ],
+    "火": [
+        { subject: "ICT活用", start: "09:20", end: "10:50" },
+        { subject: "データサイエンス", start: "11:00", end: "12:30" },
+        { subject: "PBL", start: "13:20", end: "14:50" }
+    ],
+    "木": [
+        { subject: "プログラミング", start: "09:20", end: "10:50" },
+        { subject: "日本語", start: "11:00", end: "12:30" }
+    ],
+    "金": [
+        { subject: "情報", start: "09:20", end: "10:50" },
+        { subject: "経営戦略とAIビジネス", start: "11:00", end: "12:30" }
+    ]
+};
+
+// 現在の授業を判断する
+function detectClass() {
+    const now = new Date();
+    const dayNames = ["日","月","火","水","木","金","土"];
+    const day = dayNames[now.getDay()];
+
+    const current = now.toTimeString().slice(0,5);
+    const todayClasses = timetable[day];
+
+    if (!todayClasses) return "（授業なし）";
+
+    for (let c of todayClasses) {
+        if (current >= c.start && current <= c.end) {
+            return c.subject;
         }
-    </script>
+    }
+    return "（授業時間外）";
+}
+
+// 出席送信
+function submitAttendance() {
+    const name = document.getElementById("name").value;
+    if (!name) {
+        alert("名前を入力してください");
+        return;
+    }
+
+    const now = new Date();
+    const data = {
+        name: name,
+        time: now.toLocaleString(),
+        class: detectClass()
+    };
+
+    fetch("https://api.github.com/repos/ZIN899/attendance-app/dispatches", {
+        method: "POST",
+        headers: {
+            "Accept": "application/vnd.github+json",
+            "Authorization": "Bearer ghp_xxxxxx"  // 🔥 後で安全に置き換える
+        },
+        body: JSON.stringify({
+            event_type: "save-attendance",
+            client_payload: { data: JSON.stringify(data) }
+        })
+    })
+    .then(() => {
+        alert("出席を記録しました！\n\n名前: " + name + "\n時刻: " + data.time);
+    });
+}
+</script>
+
 </body>
 </html>
 
