@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -12,7 +14,7 @@ body {
     max-width: 350px;
     margin: 0 auto;
 }
-input, button {
+select, button {
     width: 100%;
     padding: 12px;
     margin-top: 10px;
@@ -26,7 +28,13 @@ input, button {
     <h2>出席確認</h2>
 
     <label>名前（学生名）</label>
-    <input type="text" id="name" placeholder="例：ジンマーチ">
+
+    <!-- ここをセレクト式に変更 -->
+    <select id="name">
+        <option value="ジンマーチ">ジンマーチ</option>
+        <option value="メイン">メイン</option>
+        <option value="アンハ">アンハ</option>
+    </select>
 
     <button onclick="submitAttendance()">送信</button>
 </div>
@@ -54,7 +62,7 @@ const timetable = {
     ]
 };
 
-// 現在の授業を判断する
+// 現在の授業を判断
 function detectClass() {
     const now = new Date();
     const dayNames = ["日","月","火","水","木","金","土"];
@@ -77,7 +85,7 @@ function detectClass() {
 function submitAttendance() {
     const name = document.getElementById("name").value;
     if (!name) {
-        alert("名前を入力してください");
+        alert("名前を選んでください");
         return;
     }
 
@@ -92,7 +100,7 @@ function submitAttendance() {
         method: "POST",
         headers: {
             "Accept": "application/vnd.github+json",
-            "Authorization": "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"  // 🔥 後で安全に置き換える
+            "Authorization": "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"  // あとで安全に設定
         },
         body: JSON.stringify({
             event_type: "save-attendance",
@@ -100,11 +108,14 @@ function submitAttendance() {
         })
     })
     .then(() => {
-        alert("出席を記録しました！\n\n名前: " + name + "\n時刻: " + data.time);
+        alert(
+            "出席を記録しました！\n\n" +
+            "名前: " + name + "\n" +
+            "時刻: " + data.time
+        );
     });
 }
 </script>
 
 </body>
 </html>
-
