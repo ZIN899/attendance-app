@@ -1,5 +1,3 @@
-# attendance-app
-QR attendance
 // === Class Schedule ===
 // QR読み取り可能時間のルール
 // ・開始15分前〜終了時間まで読み取り可能
